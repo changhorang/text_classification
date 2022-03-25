@@ -24,13 +24,15 @@ def main(args):
     nltk.download('punkt')
     
     # Dataset
-    train_df = pd.read_csv('data1/train_data.csv', sep='\t')
-    val_df = pd.read_csv('data1/valid_data.csv', sep='\t')
-    test_df = pd.read_csv('data1/test_data.csv', sep='\t')
+    if args.dataset_selection == 'news_source':
+        train_df = pd.read_csv('data_news/train_data.csv', sep='\t')
+        val_df = pd.read_csv('data_news/valid_data.csv', sep='\t')
+        test_df = pd.read_csv('data_news/test_data.csv', sep='\t')
 
-    # train_df = pd.read_csv('data/train_data.csv', sep='\t')
-    # val_df = pd.read_csv('data/valid_data.csv', sep='\t')
-    # test_df = pd.read_csv('data/test_data.csv', sep='\t')
+    else:
+        train_df = pd.read_csv('data_imdb/train_data.csv', sep='\t')
+        val_df = pd.read_csv('data_imdb/valid_data.csv', sep='\t')
+        test_df = pd.read_csv('data_imdb/test_data.csv', sep='\t')
 
     X_train = np.array(train_df.iloc[:, 0].tolist())
     X_val = np.array(val_df.iloc[:, 0].tolist())
@@ -125,14 +127,16 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
+    parser.add_argument('--dataset_selection', default='news_source', type=str,
+                        help='dataset selection')
     parser.add_argument('--model_state', default='BERT_classifier', type=str,
                         help='model change')
     parser.add_argument("--save_model_path", type=str, default='./result/',
                         help="path to save model")                        
     
-    parser.add_argument('--lr', default=5e-5, type=float, 
+    parser.add_argument('--lr', default=1e-3, type=float, 
                         help='optimizer learning rate for train')
-    parser.add_argument('--epochs', default=20, type=int, 
+    parser.add_argument('--epochs', default=2, type=int, 
                         help='epochs for train')
     parser.add_argument('--seed', default=188, type=int,
                         help='Random seed for system')

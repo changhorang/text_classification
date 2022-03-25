@@ -80,7 +80,7 @@ def train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn, eva
         if evaluation == True:
             # After the completion of each training epoch, measure the model's performance
             # on our validation set.
-            val_loss, val_accuracy = evaluate(model, val_dataloader, loss_fn)
+            val_loss, val_accuracy = evaluate(args, model, val_dataloader, loss_fn)
 
             # Print performance over the entire training data
             # time_elapsed = time.time() - t0_epoch
