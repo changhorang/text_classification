@@ -41,7 +41,7 @@ def main(args):
 
     print('Tokenizing data...')
     if args.model_state == 'BERT_classifier':
-        tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased', do_lower_case=True)
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
         train_inputs, train_masks = preprocessing_for_bert(X_train, tokenizer)
         val_inputs, val_masks = preprocessing_for_bert(X_val, tokenizer)
         test_inputs, test_masks = preprocessing_for_bert(X_test, tokenizer)
@@ -108,7 +108,7 @@ def main(args):
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     
-    train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn)
+    train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn, evaluation=True)
     evaluate(args, model, test_dataloader, loss_fn)
     
     save_model_name = f'{args.model_state}.pt'
@@ -129,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed', default=188, type=int,
                         help='Random seed for system')
 
-    parser.add_argument('--batch_size', default=16, type=int, 
+    parser.add_argument('--batch_size', default=32, type=int, 
                         help='batch size for train')
     # parser.add_argument('--MAX_LEN', default=64, type=int, 
     #                     help='max_len of sentence')

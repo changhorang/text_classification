@@ -5,7 +5,7 @@ import numpy as np
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn):
+def train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn, evaluation=False):
     """Train the BertClassifier model.
     """
     # Start training loop
@@ -77,16 +77,17 @@ def train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn):
         # =======================================
         #               Evaluation
         # =======================================
-        
-        # After the completion of each training epoch, measure the model's performance
-        # on our validation set.
-        val_loss, val_accuracy = evaluate(model, val_dataloader, loss_fn)
+        if evaluation == True:
+            # After the completion of each training epoch, measure the model's performance
+            # on our validation set.
+            val_loss, val_accuracy = evaluate(model, val_dataloader, loss_fn)
+
         # Print performance over the entire training data
         # time_elapsed = time.time() - t0_epoch
         
-        print(f"{epoch_i + 1:^7} | {'-':^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f}")
-        print("-"*70)
-    print("\n")
+            print(f"{epoch_i + 1:^7} | {'-':^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f}")
+            print("-"*70)
+        print("\n")
     
     print("Training complete!")
 

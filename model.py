@@ -7,7 +7,7 @@ class BERTClassifier(nn.Module):
     def __init__(self, freeze_bert=False):
         super(BERTClassifier, self).__init__()
         D_in, H, D_out = 768, 50, 2 # bert pre-train시 output_dim=768
-        self.bert = BertModel.from_pretrained('bert-base-multilingual-cased')
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
 
         self.classifier = nn.Sequential(nn.Linear(D_in, H), nn.ReLU(), nn.Linear(H, D_out))
 
