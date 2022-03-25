@@ -13,7 +13,7 @@ from transformers import BertTokenizer
 
 from model import BERTClassifier, LSTM_classifier, CNN_classifier
 from epoch import train, evaluate
-from utils import set_seed, preprocessing_for_bert, tokenizer_, initialize_model
+from utils import set_seed, preprocessing_for_bert, tokenizer_
 
 def main(args):
 
