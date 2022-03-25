@@ -15,6 +15,8 @@ from model import BERTClassifier, LSTM_classifier, CNN_classifier
 from epoch import train, evaluate
 from utils import set_seed, preprocessing_for_bert, tokenizer_
 
+
+
 def main(args):
 
     set_seed(args.seed)
@@ -22,9 +24,13 @@ def main(args):
     nltk.download('punkt')
     
     # Dataset
-    train_df = pd.read_csv('data/train_data.csv', sep='\t')
-    val_df = pd.read_csv('data/valid_data.csv', sep='\t')
-    test_df = pd.read_csv('data/test_data.csv', sep='\t')
+    train_df = pd.read_csv('data1/train_data.csv', sep='\t')
+    val_df = pd.read_csv('data1/valid_data.csv', sep='\t')
+    test_df = pd.read_csv('data1/test_data.csv', sep='\t')
+
+    # train_df = pd.read_csv('data/train_data.csv', sep='\t')
+    # val_df = pd.read_csv('data/valid_data.csv', sep='\t')
+    # test_df = pd.read_csv('data/test_data.csv', sep='\t')
 
     X_train = np.array(train_df.iloc[:, 0].tolist())
     X_val = np.array(val_df.iloc[:, 0].tolist())
@@ -91,6 +97,7 @@ def main(args):
 
     if args.model_state == 'BERT_classifier':
         model = BERTClassifier(freeze_bert=False).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, eps=1e-8)
 
     elif args.model_state == 'CNN_classifier':
         N_KERNELS = 100
@@ -98,15 +105,16 @@ def main(args):
         PAD_IDX = REVIEW.vocab.stoi[REVIEW.pad_token]
 
         model = CNN_classifier(INPUT_DIM, args.EMBEDDING_DIM, N_KERNELS, KERNEL_SIZES, args.OUTPUT_DIM, args.DROPOUT, PAD_IDX).to(device)
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
     elif args.model_state == 'LSTM_classifier':
         model = LSTM_classifier(args.num_layers, args.HIDDEN_DIM, INPUT_DIM, args.EMBEDDING_DIM, args.OUTPUT_DIM, args.DROPOUT, PAD_IDX).to(device)
-    
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+
     else:
         raise NotImplementedError('Model type {} is not implemented'.format(args.model_state))
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     
     train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn, evaluation=True)
     evaluate(args, model, test_dataloader, loss_fn)

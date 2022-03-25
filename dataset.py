@@ -6,35 +6,58 @@ import argparse
 import torch
 
 from torch.utils.data import Dataset
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
-# class CustomDataset(Dataset):
-#     def __init__(self, args, ):
-#         self.X = pd.read_csv('f{args.data_path}.csv', sep='\t')
-#         self.y = []     
-                
-        
+# IMDB dataset
+total_data = pd.read_csv('IMDB Dataset.csv', engine='python', error_bad_lines=False)
 
-#     def __len__(self):
-#         return len(self.X)
+le = LabelEncoder()
 
-#     def __getitem__(self, idx):
-#         return self.X[idx], self.y[idx]
-
-train_df = pd.read_csv('data/train_data.csv', sep='\t')
-val_df = pd.read_csv('data/valid_data.csv', sep='\t')
-test_df = pd.read_csv('data/test_data.csv', sep='\t')
-
-X_train = np.array(train_df.iloc[:, 0].tolist())
-X_val = np.array(val_df.iloc[:, 0].tolist())
-X_test = np.array(test_df.iloc[:, 0].tolist())
-
-y_train = np.array(train_df.iloc[:, 1].tolist()).astype(np.int64)
-y_val = np.array(val_df.iloc[:, 1].tolist()).astype(np.int64)
-y_test = np.array(test_df.iloc[:, 1].tolist()).astype(np.int64)
-
-# Print sentence 0 and its encoded token ids
-# token_ids = list(preprocessing_for_bert([X_train[0]])[0].squeeze().numpy())
-# print('Original: ', X_train[0])
-# print('Token IDs: ', token_ids)
+y = le.fit_transform(total_data['sentiment'])
 
 
+total_data['sentiment'] = y
+
+# csv 파일로 저장
+X_train, X_test, y_train, y_test = train_test_split(total_data['review'], total_data['sentiment'],test_size=0.3,
+                                                    stratify=total_data['sentiment'], random_state=0)
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.3,
+                                                    stratify=y_train, random_state=0)
+
+train_data = pd.concat([X_train, y_train], axis=1)
+valid_data = pd.concat([X_val, y_val], axis=1)
+test_data = pd.concat([X_test, y_test], axis=1)
+
+train_data.to_csv('data1/train_data.csv', sep='\t', index=False)
+valid_data.to_csv('data1/valid_data.csv', sep='\t', index=False)
+test_data.to_csv('data1/test_data.csv', sep='\t', index=False)
+
+# convervative & liberal dataset
+conservative_data = pd.read_csv('raw_data/conservative.txt', sep='\t', header=None).dropna()
+liberal_data = pd.read_csv('raw_data/liberal.txt', sep='\t', header=None).dropna()
+
+# column 이름 변경 
+conservative_data.rename(columns = {0: 'LABEL', 1 : 'REVIEW'}, inplace = True)
+liberal_data.rename(columns = {0: 'LABEL', 1 : 'REVIEW'}, inplace = True)
+liberal_data['LABEL'] = 1 # label 구분
+
+# liberal_data.head()
+total_data = pd.concat([conservative_data, liberal_data])
+
+# csv 파일로 저장
+X_train, X_test, y_train, y_test = train_test_split(total_data['REVIEW'], total_data['LABEL'],test_size=0.3,
+                                                    stratify=total_data['LABEL'], random_state=0)
+
+X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.3,
+                                                    stratify=y_train, random_state=0)
+
+train_data = pd.concat([X_train, y_train], axis=1)
+valid_data = pd.concat([X_val, y_val], axis=1)
+test_data = pd.concat([X_test, y_test], axis=1)
+
+train_data.to_csv('data/train_data.csv', sep='\t', index=False)
+valid_data.to_csv('data/valid_data.csv', sep='\t', index=False)
+test_data.to_csv('data/test_data.csv', sep='\t', index=False)

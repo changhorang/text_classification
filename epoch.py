@@ -82,8 +82,8 @@ def train(args, model, train_dataloader, val_dataloader, optimizer, loss_fn, eva
             # on our validation set.
             val_loss, val_accuracy = evaluate(model, val_dataloader, loss_fn)
 
-        # Print performance over the entire training data
-        # time_elapsed = time.time() - t0_epoch
+            # Print performance over the entire training data
+            # time_elapsed = time.time() - t0_epoch
         
             print(f"{epoch_i + 1:^7} | {'-':^7} | {avg_train_loss:^12.6f} | {val_loss:^10.6f} | {val_accuracy:^9.2f}")
             print("-"*70)
@@ -98,7 +98,6 @@ def evaluate(args, model, test_dataloader, loss_fn):
     """
     # Put the model into the evaluation mode. The dropout layers are disabled during
     # the test time.
-    print("Start evaluate...\n")
     model.eval()
 
     # Tracking variables
@@ -110,8 +109,6 @@ def evaluate(args, model, test_dataloader, loss_fn):
         # Load batch to GPU
         if args.model_state == 'BERT_classifier':
                 b_input_ids, b_attn_mask, b_labels = tuple(t.to(device) for t in batch)
-
-                logits = model(b_input_ids, b_attn_mask)
 
                 with torch.no_grad():
                     logits = model(b_input_ids, b_attn_mask)
@@ -131,7 +128,7 @@ def evaluate(args, model, test_dataloader, loss_fn):
         preds = torch.argmax(logits, dim=1).flatten()
 
         # Calculate the accuracy rate
-        accuracy = (preds == b_labels).cpu().numpy().mean() * 100
+        accuracy = (preds == b_labels).cpu().numpy().mean()*100
         val_accuracy.append(accuracy)
 
     # Compute the average accuracy and loss over the validation set.
