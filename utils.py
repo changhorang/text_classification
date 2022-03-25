@@ -3,6 +3,7 @@ import numpy as np
 import nltk
 from nltk import word_tokenize
 import torch
+# from transformers import get_linear_schedule_with_warmup
 
 # Run function `preprocessing_for_bert` on the train set and the validation set
 def preprocessing_for_bert(data, tokenizer):
@@ -62,3 +63,23 @@ def set_seed(seed_value=188):
     np.random.seed(seed_value)
     torch.manual_seed(seed_value)
     torch.cuda.manual_seed_all(seed_value)
+
+def initialize_model(model):
+    """Initialize the Bert Classifier, the optimizer and the learning rate scheduler.
+    """
+    # Instantiate Bert Classifier
+    bert_classifier = model(freeze_bert=False)
+
+    # Create the optimizer
+    optimizer = torch.optim.Adam(bert_classifier.parameters(),
+                                lr=5e-5,    # Default learning rate
+                                eps=1e-8)    # Default epsilon value
+
+    # Total number of training steps
+    # total_steps = len(train_dataloader) * epochs
+
+    # Set up the learning rate scheduler
+    # scheduler = get_linear_schedule_with_warmup(optimizer,
+    #                                             num_warmup_steps=0, # Default value
+    #                                             num_training_steps=total_steps)
+    return bert_classifier, optimizer#, scheduler

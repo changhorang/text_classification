@@ -13,7 +13,7 @@ from transformers import BertTokenizer
 
 from model import BERTClassifier, LSTM_classifier, CNN_classifier
 from epoch import train, evaluate
-from utils import set_seed, preprocessing_for_bert, tokenizer_
+from utils import set_seed, preprocessing_for_bert, tokenizer_, initialize_model
 
 def main(args):
 
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_model_path", type=str, default='./result/',
                         help="path to save model")                        
     
-    parser.add_argument('--lr', default=1e-5, type=float, 
+    parser.add_argument('--lr', default=5e-5, type=float, 
                         help='optimizer learning rate for train')
     parser.add_argument('--epochs', default=20, type=int, 
                         help='epochs for train')
