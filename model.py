@@ -6,8 +6,8 @@ import numpy as np
 class BERTClassifier(nn.Module):
     def __init__(self, freeze_bert=False):
         super(BERTClassifier, self).__init__()
-        D_in, H, D_out = 768, 50, 2 # bert pre-train시 output_dim=768
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        D_in, H, D_out = 768, 50, 2 # bert hidden_dim=768
+        self.bert = BertModel.from_pretrained('bert-base-cased')
 
         self.classifier = nn.Sequential(nn.Linear(D_in, H), nn.ReLU(), nn.Linear(H, D_out))
 
@@ -16,16 +16,9 @@ class BERTClassifier(nn.Module):
                 param.requires_grad = False
 
     def forward(self, input_ids, attention_mask):
-        """
-        Feed input to BERT and the classifier to compute logits.
-        @param      input_ids (torch.Tensor): an input tensor with shape (batch_size, max_length)
-        @param      attention_mask (torch.Tensor): a tensor that hold attention mask information 
-                    with shape (batch_size, max_length)
-        @return     logits (torch.Tensor): an output tensor with shape (batch_size, num_labels)
-        """
         outputs = self.bert(input_ids, attention_mask) # (batch_size, sequence_length, hidden_size)
 
-        last_hidden_state_cls = outputs[0][:, 0, :] # (batch_size, hidden_size)
+        last_hidden_state_cls = outputs[0][:, 0, :] # 'latent_hidden_state' (batch_size, hidden_size) CLS token 추출
 
         logits = self.classifier(last_hidden_state_cls)
 
@@ -68,7 +61,7 @@ class CNN_classifier(nn.Module):
                                               kernel_size=kernel_sizes[i]) # ksize만 변화. embedding_dim은 고정
                                               for ksize in range(len(kernel_sizes))])
 
-        self.fc = nn.Linear(np.sum(num_filters), output_dim)
+        self.fc = nn.Linear(np.sum(n_kernels), output_dim)
         self.dropout = nn.Dropout(dropout)
         
     def forward(self, review):
